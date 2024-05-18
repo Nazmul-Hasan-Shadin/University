@@ -1,17 +1,26 @@
+import validator from 'validator'
 import { Schema, model, model } from 'mongoose'
 import { Guardian, LocalGuardian, Student, UserName } from './student.interface'
 
 const UserNameSchema = new Schema<UserName>({
   firstName: {
     type: String,
-    required: true,
+    required: [true, 'mama first name lagebeai'],
+    maxlength: 20,
+    validate: function (value) {
+      console.log(value)
+    },
   },
   middleName: {
     type: String,
   },
   lastName: {
     type: String,
-    required: true,
+    required: [true, 'mama last name lagebeai'],
+    validate: {
+      validator: (value: string) => validator.isAlpha(value),
+      message: '{VALUE} IS NOT VkkkkkALID',
+    },
   },
 })
 
@@ -32,20 +41,49 @@ const localGuardianSchema = new Schema<LocalGuardian>({
 })
 
 const studentSchema = new Schema<Student>({
-  id: { type: String },
-  name: UserNameSchema,
-  gender: ['male', 'female'],
+  id: { type: String, required: true, unique: true },
+  name: {
+    type: UserNameSchema,
+    required: true,
+  },
+  gender: {
+    type: String,
+    enum: {
+      values: ['male', 'female', 'other'],
+      message: '{VALUE} IS NOT REQUIRED',
+    },
+    required: true,
+  },
   dateOfBirth: String,
-  email: { type: String },
+  email: { 
+    type: String,
+    required:[true,'Email is required bro'],
+    unique:true,
+    validate:{
+      validator:(value:string)=>validator.isEmail(value),
+      message:'mama email sara hobea na'
+    }
+  
+  },
   contactNumber: { type: String, required: true },
   emergencyContactNo: { type: String, required: true },
-  bloodGroup: ['A+', 'B+', 'c+'],
+  bloodGroup: {
+    type: String,
+    enum: ['A+', 'B+', 'c+'],
+  },
   presentAddress: { type: String, required: true },
   permanentAddress: { type: String, required: true },
   guardian: guardianSchema,
-  localGuardian: localGuardianSchema,
+  localGuardian: {
+    type: localGuardianSchema,
+    required: true,
+  },
   profileImg: { type: String, required: true },
-  isActive: ['active', 'inActive'],
+  isActive: {
+    type: String,
+    enum: ['active', 'inActive'],
+    default: 'active',
+  },
 })
 
-export const  StudentModel= model<Student>('Student',studentSchema)
+export const StudentModel = model<Student>('Student', studentSchema)
