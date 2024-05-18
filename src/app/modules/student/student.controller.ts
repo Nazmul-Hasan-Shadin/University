@@ -1,37 +1,41 @@
 import { Request, Response } from 'express'
 import { StudentServices } from './student.service'
-import Joi from 'joi'
+import { z } from 'zod'
 import studentValidationSchema from './student.validation'
+
+// import studentValidationSchema from './student.validation'
 
 const createStudent = async (req: Request, res: Response) => {
   try {
-    // creating a schema validation using joi
+    // creating a schema validation using jod
 
     const { student: studentData } = req.body
 
-    const { error } = studentValidationSchema.validate(studentData)
+    const zodParseData = studentValidationSchema.parse(studentData)
 
-    const result = await StudentServices.createStudentIntoDb(studentData)
-    if (error) {
-      res.status(200).json({
-        success: true,
-        message: 'something went wrong',
-        data: error.details,
-      })
-    }
+    // const { error,value} = studentValidationSchema.validate(studentData)
+
+    const result = await StudentServices.createStudentIntoDb(zodParseData)
+    // if (error) {
+    //   res.status(200).json({
+    //     success: true,
+    //     message: 'something went wrong',
+    //     data: error.details,
+    //   })
+    // }
 
     res.status(200).json({
       success: true,
       message: 'Student is created successfully',
       data: result,
     })
-  } catch (error) {
+  } catch (error: any) {
     //  console.log(error);
 
     res.status(500).json({
       success: false,
-      // error: 'somethin went wrong',
-      data: error,
+      message: error.message || 'somethin we wrong',
+      error: error,
     })
   }
 }
@@ -44,8 +48,12 @@ const getAllStudents = async (req: Request, res: Response) => {
       message: 'Student is retrived successfully',
       data: result,
     })
-  } catch (error) {
-    console.log(error)
+  } catch (error:any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'somethin we wrong',
+      error: error,
+    })
   }
 }
 
@@ -59,8 +67,31 @@ const getSingleStudent = async (req: Request, res: Response) => {
       message: 'Student is  successfully recieved',
       data: result,
     })
+  } catch (error:any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'somethin we wrong',
+      error: error,
+    })
+  }
+}
+
+
+const deleteStudent= async (req:Request,res:Response)=>{
+  try {
+    const {studentId}=req.params;
+    const result= await StudentServices.deleteStudentFromDb(studentId)
+    res.status(200).json({
+      success:true,
+      message:'Student is deleted',
+      data:result
+    })
   } catch (error) {
-    console.log(error)
+     res.status(500).json({
+      success:false,
+      message:error.message || 'somethin went wrong',
+      error:err
+     })
   }
 }
 
@@ -68,4 +99,5 @@ export const StudentControllers = {
   createStudent,
   getAllStudents,
   getSingleStudent,
+  deleteStudent
 }

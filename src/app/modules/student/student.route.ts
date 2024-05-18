@@ -8,4 +8,5 @@ router.post('/create-students', StudentControllers.createStudent)
 router.get('/', StudentControllers.getAllStudents)
 
 router.get('/:id',StudentControllers.getSingleStudent)
+router.delete('/:studentId',StudentControllers.deleteStudent)
 export const StudentRoutes = router
