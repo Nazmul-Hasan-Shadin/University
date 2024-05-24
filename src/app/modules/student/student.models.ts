@@ -49,21 +49,18 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 })
 
 const studentSchema = new Schema<TStudent, StudentModel>({
-  id: { type: String, required: [true,'id is required'], unique: true },
-  user:{
-    type:Schema.Types.ObjectId,
-    required:[true,'user id is required'],
-    unique:true,
-    ref:'User'
+  id: { type: String, required: [true, 'id is required'], unique: true },
+  user: {
+    type: Schema.Types.ObjectId,
+    required: [true, 'user id is required'],
+    unique: true,
+    ref: 'User',
   },
   name: {
     type: UserNameSchema,
     required: true,
   },
-  password: {
-    type: String,
-    required: [true, 'password must be need'],
-  },
+
   gender: {
     type: String,
     enum: {
@@ -105,19 +102,6 @@ const studentSchema = new Schema<TStudent, StudentModel>({
 
 // pre save middleware /hook :will work on create () and save()
 
-studentSchema.pre('save', async function (next) {
-  // hashing password and save into db
-
-  const user = this
-
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_round),
-  )
-
-  next()
-})
-
 // post save middleware /hook
 
 studentSchema.post('save', function (doc, next) {
@@ -129,23 +113,15 @@ studentSchema.post('save', function (doc, next) {
 // query middleware
 
 studentSchema.pre('find', function (next) {
-  this.find({isDeleted:{$ne:true}})
+  this.find({ isDeleted: { $ne: true } })
   next()
 })
 
-
 // vartual
 
-
-studentSchema.virtual('fullName').get(function(){
+studentSchema.virtual('fullName').get(function () {
   return this.name.firstName + this.name.middleName + this.name.lastName
 })
-
-
-
-
-
-
 
 // create a custom static methods
 
