@@ -1,44 +1,10 @@
 import { Request, Response } from 'express'
 import { StudentServices } from './student.service'
-import { z } from 'zod'
-import studentValidationSchema from './student.validation'
+
+
 
 // import studentValidationSchema from './student.validation'
 
-const createStudent = async (req: Request, res: Response) => {
-  try {
-    // creating a schema validation using jod
-
-    const { student: studentData } = req.body
-
-    const zodParseData = studentValidationSchema.parse(studentData)
-
-    // const { error,value} = studentValidationSchema.validate(studentData)
-
-    const result = await StudentServices.createStudentIntoDb(zodParseData)
-    // if (error) {
-    //   res.status(200).json({
-    //     success: true,
-    //     message: 'something went wrong',
-    //     data: error.details,
-    //   })
-    // }
-
-    res.status(200).json({
-      success: true,
-      message: 'Student is created successfully',
-      data: result,
-    })
-  } catch (error: any) {
-    //  console.log(error);
-
-    res.status(500).json({
-      success: false,
-      message: error.message || 'somethin we wrong',
-      error: error,
-    })
-  }
-}
 
 const getAllStudents = async (req: Request, res: Response) => {
   try {
