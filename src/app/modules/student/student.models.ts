@@ -4,12 +4,11 @@ import {
   TGuardian,
   TLocalGuardian,
   TStudent,
-  StudentMethods,
+ 
   StudentModel,
   TUserName,
 } from './student.interface'
-import bcrypt from 'bcrypt'
-import config from '../../config'
+
 const UserNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
@@ -69,7 +68,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     },
     required: true,
   },
-  dateOfBirth: String,
+  dateOfBirth: {type:Date},
   email: {
     type: String,
     required: [true, 'Email is required bro'],

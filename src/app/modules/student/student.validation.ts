@@ -34,35 +34,40 @@ const localGuardianSchema = z.object({
 })
 
 // Define the Student schema
-const studentValidationSchema = z.object({
-  id: z.string().nonempty('ID is required'),
-  name: UserNameSchema,
-  password: z.string(),
-  gender: z.enum(['male', 'female', 'other'], {
-    errorMap: (issue, _ctx) => {
-      if (issue.code === 'invalid_enum_value') {
-        return { message: '{VALUE} IS NOT REQUIRED' }
-      }
-      return { message: 'Gender is required' }
-    },
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string(),
+    student:z.object({
+      name: UserNameSchema,
+ 
+      gender: z.enum(['male', 'female', 'other'], {
+        errorMap: (issue, _ctx) => {
+          if (issue.code === 'invalid_enum_value') {
+            return { message: '{VALUE} IS NOT REQUIRED' }
+          }
+          return { message: 'Gender is required' }
+        },
+      }),
+      dateOfBirth: z.date().optional(),
+      email: z
+        .string()
+        .email('mama email sara hobea na')
+        .nonempty('Email is required bro'),
+      contactNumber: z.string().nonempty('Contact number is required'),
+      emergencyContactNo: z
+        .string()
+        .nonempty('Emergency contact number is required'),
+      bloodGroup: z.enum(['A+', 'B+', 'c+']).optional(),
+      presentAddress: z.string().nonempty('Present address is required'),
+      permanentAddress: z.string().nonempty('Permanent address is required'),
+      guardian: guardianValidationSchema,
+      localGuardian: localGuardianSchema,
+      profileImg: z.string().nonempty('Profile image is required'),
+  
+    })
   }),
-  dateOfBirth: z.string().optional(),
-  email: z
-    .string()
-    .email('mama email sara hobea na')
-    .nonempty('Email is required bro'),
-  contactNumber: z.string().nonempty('Contact number is required'),
-  emergencyContactNo: z
-    .string()
-    .nonempty('Emergency contact number is required'),
-  bloodGroup: z.enum(['A+', 'B+', 'c+']).optional(),
-  presentAddress: z.string().nonempty('Present address is required'),
-  permanentAddress: z.string().nonempty('Permanent address is required'),
-  guardian: guardianValidationSchema,
-  localGuardian: localGuardianSchema,
-  profileImg: z.string().nonempty('Profile image is required'),
-  isActive: z.enum(['active', 'inActive']).default('active'),
-  isDeleted: z.boolean(),
 })
 
-export default studentValidationSchema
+export const studentValidations = {
+  createStudentValidationSchema,
+}

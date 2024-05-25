@@ -7,7 +7,6 @@ import { User } from './user.model'
 const createStudentIntoDb = async (password: string, studentData:TStudent) => {
   // create a user obj
 
-  console.log(studentData,'isamddaaaaaaaaaaaaaaaaaaaaaa');
   
   const userData: Partial<TUser> = {}
 
@@ -23,7 +22,6 @@ const createStudentIntoDb = async (password: string, studentData:TStudent) => {
   //  create a user
   const newUser = await User.create(userData)
 
- console.log(studentData.id,'isam');
  
   if (!newUser) {
     throw new Error('Failed to create new user')
