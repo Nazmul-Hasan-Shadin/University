@@ -1,6 +1,6 @@
 export type Month = 'january'
 
-export type TAcademicSemisterName = 'Autum' | 'summar' | 'fall'
+export type TAcademicSemisterName = 'Autum' | 'Summar' | 'Fall'
 export type TAcademisSemisterCode='01' | '02' | 'o3'
 export type TAcademicSemister = {
   name: TAcademicSemisterName
@@ -8,4 +8,8 @@ export type TAcademicSemister = {
   year: string
   startMonth: string
   endMonth: string
+}
+
+export type TAcademicSemisterNameCodeMapper = {
+  [key:string]:string
 }

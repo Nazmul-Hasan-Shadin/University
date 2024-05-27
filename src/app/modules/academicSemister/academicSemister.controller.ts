@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express'
 
-import { UserServices } from './user.services'
 import sendResponse from '../../utils/sendResponse'
 import catchAsync from '../../utils/catchAsync'
 import { AcademicSemisterServices } from './academicSemister.service'
