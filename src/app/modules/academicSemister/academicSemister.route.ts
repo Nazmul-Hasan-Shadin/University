@@ -10,4 +10,10 @@ const router = express.Router()
 
  router.post('/create-academic-semister',validateRequest(AcademicSemisterValidations.createAcademicSemisterValidationSemister),AcademicSemisterControllers.createAcademicSemister)
 
+ router.get('/:semesterId',AcademicSemisterControllers.getSingleAcademicSemister)
+
+ router.patch('/:semesterId',AcademicSemisterControllers.updateAcademicSemister)
+
+ router.get('/',AcademicSemisterControllers.getAllAcademicSemister)
+
 export const AcademicSemisterRoutes = router

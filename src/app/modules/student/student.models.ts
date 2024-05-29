@@ -92,6 +92,10 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     required: true,
   },
   profileImg: { type: String, required: true },
+  admissionSemister:{
+    type:Schema.ObjectId,
+    ref:'AcademicSemister'
+  },
 
   isDeleted: {
     type: Boolean,

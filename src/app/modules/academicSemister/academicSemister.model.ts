@@ -20,7 +20,7 @@ const academicSemisterSchema = new Schema<TAcademicSemister>(
     },
     code: {
       type: String,
-      required: true,
+    
       enum: AcademicSemisterCode,
     },
 
@@ -38,15 +38,14 @@ const academicSemisterSchema = new Schema<TAcademicSemister>(
 
 academicSemisterSchema.pre('save', async function (next) {
   const isSemisterExist = await AcademicSemister.findOne({
-    name:this.name,
-    year:this.year
+    name: this.name,
+    year: this.year,
   })
- 
+
   if (isSemisterExist) {
     throw new Error('Semister is already exist')
   }
-  next();
-
+  next()
 })
 
 export const AcademicSemister = model<TAcademicSemister>(
