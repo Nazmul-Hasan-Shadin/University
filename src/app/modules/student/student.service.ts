@@ -4,8 +4,39 @@ import { Student } from './student.models'
 import { AppError } from '../../errors/appError'
 import { User } from '../user/user.model'
 
-const getAllStudentsFromDB = async () => {
-  const result = await Student.find()
+const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  // for search  {email:{$regex:query.searchTerm, $option:i}}
+
+  // fro multiple field search query we need to map of these field
+
+  let searchTerm = ''
+  const excludes = ['searchTerm', 'sort','limit']
+
+  const queryObj = { ...query }
+  excludes.forEach((el) => {
+    delete queryObj[el]
+  })
+  console.log({ query, queryObj })
+
+  const studentSearchableField = ['email', 'name.firstName', 'presentAddress']
+  const searchQuery = Student.find({
+    $or: studentSearchableField.map((field) => ({
+      [field]: { $regex: searchTerm, $options: 'i' },
+    })),
+  })
+
+  let sort = '-createdAt'
+  if (query?.sort) {
+    sort = query.sort as string
+  }
+
+  if (query?.searchTerm) {
+    searchTerm = query?.searchTerm as string
+  }
+
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .populate('admissionSemister')
     .populate({
       path: 'academicDeparment',
@@ -13,7 +44,16 @@ const getAllStudentsFromDB = async () => {
         path: 'academicfaculty',
       },
     })
-  return result
+
+
+
+  const sortQuery = filterQuery.sort(sort)
+  let limit=1
+  if(query?.limit){
+     limit=query.limit as string
+  }
+   const limitQuery= await sortQuery.limit(limit)
+  return limitQuery
 }
 
 const getSingleStudentFromDb = async (id: string) => {
@@ -53,7 +93,11 @@ const updateStudentIntoDb = async (id: string, payload: Partial<TStudent>) => {
     }
   }
 
-  const result = await Student.findOneAndUpdate({ id: id }, modifiedUpdatedData,{runValidators:true})
+  const result = await Student.findOneAndUpdate(
+    { id: id },
+    modifiedUpdatedData,
+    { runValidators: true },
+  )
 
   return result
 }
