@@ -5,19 +5,17 @@ import { AppError } from '../../errors/appError'
 import { User } from '../user/user.model'
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  console.log(query)
+
   // for search  {email:{$regex:query.searchTerm, $option:i}}
 
   // fro multiple field search query we need to map of these field
-
+  const excludes = ['searchTerm', 'sort','limit','page','fields']
   let searchTerm = ''
-  const excludes = ['searchTerm', 'sort','limit']
 
   const queryObj = { ...query }
-  excludes.forEach((el) => {
-    delete queryObj[el]
-  })
-  console.log({ query, queryObj })
-
+  excludes.forEach((el) => delete queryObj[el])
+  console.log(queryObj, 'hi')
   const studentSearchableField = ['email', 'name.firstName', 'presentAddress']
   const searchQuery = Student.find({
     $or: studentSearchableField.map((field) => ({
@@ -25,16 +23,10 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     })),
   })
 
-  let sort = '-createdAt'
-  if (query?.sort) {
-    sort = query.sort as string
-  }
 
   if (query?.searchTerm) {
     searchTerm = query?.searchTerm as string
   }
-
-
   const filterQuery = searchQuery
     .find(queryObj)
     .populate('admissionSemister')
@@ -44,16 +36,41 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
         path: 'academicfaculty',
       },
     })
-
-
-
+    let sort = '-createdAt'
+    if (query?.sort) {
+      sort = query.sort as string
+    }
   const sortQuery = filterQuery.sort(sort)
-  let limit=1
-  if(query?.limit){
-     limit=query.limit as string
+  let limit = 1
+  let page = 1
+  let skip = 0
+
+  if (query?.limit) {
+    limit = Number(query.limit)
   }
-   const limitQuery= await sortQuery.limit(limit)
-  return limitQuery
+  if (query.page) {
+    page = Number(query.page)
+    skip = (page - 1)*limit
+  }
+  const paginateQuery = sortQuery.skip(skip)
+  const limitQuery =paginateQuery.limit(limit)
+
+
+ //field limiting
+
+ let fields='-__v';
+ if (query.fields) {
+    fields=(query.fields as string).split(',').join(' ')
+    console.log(fields);
+    
+ }
+
+ const fieldsQuery = await limitQuery.select(fields)
+
+
+
+  
+  return fieldsQuery
 }
 
 const getSingleStudentFromDb = async (id: string) => {
