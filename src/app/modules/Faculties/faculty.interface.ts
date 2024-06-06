@@ -7,7 +7,7 @@ export type TUserName={
     lastName:string;
 }
 
-export type TGender= 'male' | 'female' | 'other'
+export type TGender= 'Male' | 'Female' | 'Other'
 export type TBloodGroup= 'A+' | 'B+' | 'B-' | 'O+'
 
 export type TFaculty={

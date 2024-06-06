@@ -25,11 +25,11 @@ app.use(cors())
 
 app.use('/api/v1', router)
  
-const test=async(req:Request,res:Response)=>{
-  Promise.reject()
-}
+// const test=async(req:Request,res:Response)=>{
+//   Promise.reject()
+// }
 
-app.use('/',test)
+// app.use('/',test)
 
 // app.get('/', (req: Request, res: Response) => {
 //   const a = 23

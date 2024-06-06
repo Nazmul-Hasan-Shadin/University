@@ -24,10 +24,8 @@ const getSingleStudent: RequestHandler = catchAsync(async (req, res) => {
 })
 
 const updateStudent: RequestHandler =catchAsync(async (req, res) => {
-   console.log(req.body,'iambdojffffffffffffffffff')
+  
   const { studentId } = req.params
-  console.log(studentId)
-
   const { student } = req.body
   // console.log(req.body,'iam body');
 

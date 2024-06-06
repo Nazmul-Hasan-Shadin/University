@@ -4,7 +4,7 @@ import { BloodGroup, Gender } from './faculty.const'
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
-    String,
+   type:String,
     required: [true, 'Frist name is required'],
     trim: true,
     maxlength: [20, 'Name can not be more than 20 character'],
@@ -45,9 +45,9 @@ const facultySchema = new Schema<TFaculty, FacultyModel>({
     type: String,
     enum: {
       values: Gender,
-      message: `{VALUE} is required`,
+      message: '{VALUE} is not a valid gender',
     },
-    required: true,
+    required: [true, 'Gender is required'],
   },
   dateOFbirth: { type: String },
   email: {
