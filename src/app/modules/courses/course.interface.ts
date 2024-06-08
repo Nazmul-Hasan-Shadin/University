@@ -15,3 +15,10 @@ export type TCourse={
     
     preRequisiteCourse:[TPreRequisteCoursel]
 }
+
+// course assing to faculties interface
+
+export type TCourseFaculty={
+    course:Types.ObjectId;
+    faculties:[Types.ObjectId]
+}

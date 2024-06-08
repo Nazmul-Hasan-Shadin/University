@@ -13,7 +13,7 @@ class QueryBuilder<T> {
     const searchTerm=this?.query?.searchTerm
     if (searchTerm) {
       this.modelQuery = this.modelQuery.find({
-        $or: searchableFields.map(
+        $or:searchableFields.map(
           (field) =>
             ({
               [field]: { $regex: searchTerm, $options: 'i' },
@@ -26,11 +26,11 @@ class QueryBuilder<T> {
 
   filter(){
     const queryObj = { ...this.query }
-
+    
     const excludes = ['searchTerm', 'sort','limit','page','fields']
     
     excludes.forEach((el) => delete queryObj[el])
-
+    
     this.modelQuery=this.modelQuery.find(queryObj as FilterQuery<T>);
     return this
   }
