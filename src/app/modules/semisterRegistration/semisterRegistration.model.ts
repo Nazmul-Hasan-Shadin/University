@@ -5,7 +5,7 @@ import { SemesterRegistrationStatus } from './semesterRegistration.const'
 const semessterRegistrationSchema = new mongoose.Schema<TSemesterRegistration>({
   academicSemester:{
     type:Schema.ObjectId,
-    ref:'AcademiSemester',
+    ref:'AcademicSemister',
     unique:true,
     required:true
   },

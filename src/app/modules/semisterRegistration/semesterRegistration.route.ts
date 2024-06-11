@@ -9,8 +9,11 @@ router.post('/create-semester-registration',validateRequest(SemesterRegistration
 
 router.get('/:id',SemesterRegistrationController.getSingleSemesterRegistration)
 
-router.patch('/:id',SemesterRegistrationController.updateSemesterRegistration)
+router.patch('/:id',validateRequest(SemesterRegistrationValidation.updateSemesterRegistrationValidation),SemesterRegistrationController.updateSemesterRegistration)
 
 router.get('/',SemesterRegistrationController.getAllSemisterRegistration)
+
+
+router.delete('/:id',SemesterRegistrationController.deleteSemesterRegistration)
 
 export const SemesterRegistrationRoutes=router
