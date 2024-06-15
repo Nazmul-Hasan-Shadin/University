@@ -2,8 +2,6 @@ import { FacultyServices } from './faculty.services'
 import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
 
-
-
 const getSingleFaculty = catchAsync(async (req, res) => {
   const { id } = req.params
   const result = await FacultyServices.getSingleFacultyFromDb(id)
@@ -16,8 +14,8 @@ const getSingleFaculty = catchAsync(async (req, res) => {
 })
 
 const getAllFaculties = catchAsync(async (req, res) => {
-  
-  
+  console.log('test', req.cookies)
+
   const result = await FacultyServices.getAllFacultyFromDB(req.query)
   sendResponse(res, {
     statusCode: 200,
@@ -42,7 +40,6 @@ const updateFaculty = catchAsync(async (req, res) => {
 const deleteFaculty = catchAsync(async (req, res) => {
   const { id } = req.params
 
-  
   const result = await FacultyServices.deleteFacultyFromDb(id)
 
   sendResponse(res, {

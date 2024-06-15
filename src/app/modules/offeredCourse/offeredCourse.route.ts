@@ -6,7 +6,8 @@ import { OfferdCourseValidations } from './offerCourse.validation';
 
 const router= express.Router()
 
-router.get('/',OfferedCourseController);
+router.get('/',OfferedCourseController.getSingleOfferedCourse);
+router.get('/',OfferedCourseController.getAllOfferedCourse);
 
 
 

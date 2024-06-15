@@ -6,6 +6,8 @@ import { error } from 'console'
 import validateRequest from '../../middleware/validateRequest'
 import { createFacultyValidateSchema } from '../Faculties/faculty.validate'
 import { createAdminValidationSchema } from '../Admin/admin.validate'
+import auth from '../auth/auth'
+import { USER_ROLE } from './user.const'
 
 const router = express.Router()
 
@@ -15,7 +17,7 @@ router.post(
   UsersControllers.createFaculty)
 
 router.post(
-  '/create-student',
+  '/create-student', auth(USER_ROLE.admin),
   validateRequest(studentValidations.createStudentValidationSchema),
   UsersControllers.createStudent,
 )
