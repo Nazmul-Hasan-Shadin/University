@@ -2,6 +2,7 @@ import express from 'express'
 import { AcademicSemisterControllers } from './academicSemister.controller'
 import validateRequest from '../../middleware/validateRequest'
 import { AcademicSemisterValidations } from './academicSemisterValidation'
+import auth from '../auth/auth'
 
 
 const router = express.Router()
@@ -14,6 +15,6 @@ const router = express.Router()
 
  router.patch('/:semesterId',AcademicSemisterControllers.updateAcademicSemister)
 
- router.get('/',AcademicSemisterControllers.getAllAcademicSemister)
+ router.get('/',auth('admin'),AcademicSemisterControllers.getAllAcademicSemister)
 
 export const AcademicSemisterRoutes = router

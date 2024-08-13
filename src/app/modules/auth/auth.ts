@@ -12,15 +12,25 @@ const auth = (...requiredRoles: TUserRole[]) => {
     // validation
 
     const token = req.headers.authorization
+  
+    
     if (!token) {
-      throw new AppError(400, 'YOur are not authorized')
+      throw new AppError(401, 'YOur are not authorized')
     }
 
+    console.log(config.jwt_access_secret,'iam secret');
+    
+
     // if token send but worng so valid now
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string,
-    ) as JwtPayload
+    let decoded;
+    try {
+       decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+      ) as JwtPayload
+    } catch (error) {
+      throw new AppError(401,'unauthorized')
+    }
     const { role, userId, iat } = decoded
 
     const user = await User.isUserExistByCustomId(userId)

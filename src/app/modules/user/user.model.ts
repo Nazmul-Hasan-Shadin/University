@@ -10,6 +10,11 @@ const userSchema = new Schema<TUser, UserModel>(
       required: true,
       unique: true,
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     role: {
       type: String,
     },
@@ -63,8 +68,7 @@ userSchema.post('save', function (doc, next) {
 })
 
 userSchema.statics.isUserExistByCustomId = async function (id: string) {
-  console.log(id)
-
+ 
   return await User.findOne({ id }).select('+password')
 }
 userSchema.statics.isJwtIssuedBeforePasswordChanged =  function (
