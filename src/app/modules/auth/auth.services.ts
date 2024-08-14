@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt'
 import config from '../../config'
 import { sendEmail } from '../../utils/sendMailer'
 import { decode } from 'punycode'
+import { verifyToken } from './auth.utils'
 
 const loginUserIntoDb = async (payload: TLoginUser) => {
   const user = await User.isUserExistByCustomId(payload.id)
@@ -107,10 +108,7 @@ const changePassword = async (
 
 const refreshToken = async (token: string) => {
   // if token send but worng so valid now
-  const decoded = jwt.verify(
-    token,
-    config.JWT_REFRESH_SECRET as string,
-  ) as JwtPayload
+  const decoded = verifyToken(token, config.JWT_REFRESH_SECRET as string)
 
   const { role, userId, iat } = decoded
 
@@ -187,8 +185,8 @@ const resetPassword = async (
   payload: { id: string; newPassword: string },
   token: string,
 ) => {
-  console.log(payload.id);
-  
+  console.log(payload.id)
+
   const user = await User.isUserExistByCustomId(payload.id)
   console.log(user)
 
@@ -218,10 +216,9 @@ const resetPassword = async (
     token,
     config.jwt_access_secret as string,
   ) as JwtPayload
-  console.log('decoded id',decoded.userId);
-  
+  console.log('decoded id', decoded.userId)
 
-  if (payload.id !==decoded.userId) {
+  if (payload.id !== decoded.userId) {
     throw new AppError(401, 'Your are forbidden')
   }
 
@@ -239,11 +236,7 @@ const resetPassword = async (
 
       passwordChangeAt: new Date(),
     },
-
   )
-
-
-
 }
 
 export const AuthServices = {

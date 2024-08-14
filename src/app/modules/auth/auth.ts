@@ -18,7 +18,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
       throw new AppError(401, 'YOur are not authorized')
     }
 
-    console.log(config.jwt_access_secret,'iam secret');
+ 
     
 
     // if token send but worng so valid now

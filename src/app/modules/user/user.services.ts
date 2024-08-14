@@ -16,6 +16,8 @@ import { TFaculty } from '../Faculties/faculty.interface'
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model'
 import { Faculty } from '../Faculties/faculty.model'
 import { Admin } from '../Admin/admin.model'
+import { verifyToken } from '../auth/auth.utils'
+import { JwtPayload } from 'jsonwebtoken'
 
 const createStudentIntoDb = async (password: string, payload: TStudent) => {
   // create a user obj
@@ -160,8 +162,46 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
   }
 }
 
+const getMe = async (userId: string, role: string) => {
+  // const decoded=verifyToken(token,config.jwt_access_secret as string)
+
+  //    console.log(userId,role);
+  let result = null
+  if (role === 'student') {
+    result = await Student.findOne({ id: userId }).populate('user')
+  }
+  if (role === 'admin') {
+    result = await Admin.findOne({ id: userId })
+  }
+  if (role === 'faculty') {
+    result = await Faculty.findOne({ id: userId }).populate('user')
+  }
+
+  // const result= await
+
+  return result
+}
+
+const changeUserStatusIntoDb = async (
+  id: string,
+  payload: {
+    status: string
+  },
+) => {
+  // const result= await
+
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+  })
+
+  return result
+}
+
+
 export const UserServices = {
   createStudentIntoDb,
   createFacultyIntoDb,
   createAdminIntoDB,
+  getMe,
+  changeUserStatusIntoDb
 }
