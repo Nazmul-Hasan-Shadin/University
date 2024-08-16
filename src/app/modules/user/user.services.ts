@@ -18,8 +18,9 @@ import { Faculty } from '../Faculties/faculty.model'
 import { Admin } from '../Admin/admin.model'
 import { verifyToken } from '../auth/auth.utils'
 import { JwtPayload } from 'jsonwebtoken'
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary'
 
-const createStudentIntoDb = async (password: string, payload: TStudent) => {
+const createStudentIntoDb = async (password: string, payload: TStudent,file:any) => {
   // create a user obj
 
   const userData: Partial<TUser> = {}
@@ -37,16 +38,33 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
   const admissionSemester = await AcademicSemister.findById(
     payload.admissionSemister,
   )
-
+  console.log(admissionSemester,'adminiset');
+  
   const session = await mongoose.startSession()
 
   try {
     session.startTransaction()
     // transiction 1
     userData.id = await generateStudentId(admissionSemester)
+    console.log(userData);
+    
+
+    const imageName=`${userData?.id}${payload?.name?.firstName}`;
+    const path=file?.path
+
+    // send imageto cloudianry
+
+    const uploadedImg = await sendImageToCloudinary(imageName,path)
+
+    
+
+    // console.log(secure_url, 'iam secure url');
+    
 
     //  create a user
     const newUser = await User.create([userData], { session })
+  
+    
 
     if (!newUser) {
       throw new Error('Failed to create new user')
@@ -58,6 +76,9 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
     }
     payload.id = newUser[0].id
     payload.user = newUser[0]._id
+    payload.profileImg=uploadedImg?.secure_url
+    console.log(payload,'iam payload');
+    
 
     // create a student (transiction1)
     const newStudent = await Student.create([payload], { session })
@@ -65,12 +86,15 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
       throw new AppError(404, 'Failed to create student')
     }
 
+  
+    
+
     await session.commitTransaction()
     await session.endSession()
     return newStudent
   } catch (error) {
     await session.abortTransaction()
-    await session.endSession
+    await session.endSession()
   }
 }
 

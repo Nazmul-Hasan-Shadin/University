@@ -10,7 +10,11 @@ const createStudent: RequestHandler = catchAsync(async (req, res) => {
 
   const { password, student: studentData } = req.body
 
-  const result = await UserServices.createStudentIntoDb(password, studentData)
+  const result = await UserServices.createStudentIntoDb(
+    password,
+    studentData,
+    req.file,
+  )
 
   // res.status(200).json({
   //   success: true,
@@ -21,8 +25,9 @@ const createStudent: RequestHandler = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: 200,
+
+    message: 'student  succesfully',
     data: result,
-    message: 'student created succesfully',
   })
 })
 
@@ -74,7 +79,7 @@ const getMe = catchAsync(async (req, res) => {
 const userStatus = catchAsync(async (req, res) => {
   const id = req.params.id
 
-  const result = await UserServices.changeUserStatusIntoDb(id,req.body)
+  const result = await UserServices.changeUserStatusIntoDb(id, req.body)
 
   sendResponse(res, {
     statusCode: 200,

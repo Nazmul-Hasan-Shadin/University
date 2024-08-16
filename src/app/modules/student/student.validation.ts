@@ -84,7 +84,7 @@ const updateLocalGuardianSchema = z.object({
 // Define the Student schema
 const createStudentValidationSchema = z.object({
   body: z.object({
-    password: z.string(),
+    password: z.string().optional(),
     student: z.object({
       name: UserNameSchema,
 
@@ -112,7 +112,7 @@ const createStudentValidationSchema = z.object({
       permanentAddress: z.string().nonempty('Permanent address is required'),
       guardian: guardianValidationSchema,
       localGuardian: localGuardianSchema,
-      profileImg: z.string().nonempty('Profile image is required'),
+      profileImg: z.string().nonempty('Profile image is required').optional(),
     }),
   }),
 })
