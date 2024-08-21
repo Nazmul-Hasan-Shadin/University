@@ -7,8 +7,6 @@ import QueryBuilder from '../../builder/QueryBuilder'
 import { studentSearchableField } from './student.constant'
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
- 
-
   // for search  {email:{$regex:query.searchTerm, $option:i}}
 
   // fro multiple field search query we need to map of these field
@@ -24,7 +22,6 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   //     [field]: { $regex: searchTerm, $options: 'i' },
   //   })),
   // })
-
 
   // if (query?.searchTerm) {
   //   searchTerm = query?.searchTerm as string
@@ -57,39 +54,39 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   // const paginateQuery = sortQuery.skip(skip)
   // const limitQuery =paginateQuery.limit(limit)
 
+  //field limiting
 
- //field limiting
+  //  let fields='-__v';
+  //  if (query.fields) {
+  //     fields=(query.fields as string).split(',').join(' ')
+  //     console.log(fields);
 
-//  let fields='-__v';
-//  if (query.fields) {
-//     fields=(query.fields as string).split(',').join(' ')
-//     console.log(fields);
-    
-//  }
+  //  }
 
-//  const fieldsQuery = await limitQuery.select(fields)
+  //  const fieldsQuery = await limitQuery.select(fields)
 
+  //   return fieldsQuery
 
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate('user')
+      .populate('admissionSemister')
+      .populate('academicDeparment academicFaculty'),
+    query,
+  )
+    .search(studentSearchableField)
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
 
-  
-//   return fieldsQuery
+  const result = await studentQuery.modelQuery
+  const meta = await studentQuery.countTotal()
 
- const studentQuery=new QueryBuilder(Student.find().populate('admissionSemister').populate('user')
-    .populate({
-      path: 'academicDeparment',
-      populate: {
-      path: 'academicfaculty',
-    },
-   }),query).search(studentSearchableField).filter().sort().paginate().fields()
-
-  const result= await studentQuery.modelQuery
-  return result
-
-
-
-
-
-
+  return {
+    meta,
+    result,
+  }
 }
 
 const getSingleStudentFromDb = async (id: string) => {
@@ -129,11 +126,9 @@ const updateStudentIntoDb = async (id: string, payload: Partial<TStudent>) => {
     }
   }
 
-  const result = await Student.findByIdAndUpdate(
-    id,
-    modifiedUpdatedData,
-    { runValidators: true },
-  )
+  const result = await Student.findByIdAndUpdate(id, modifiedUpdatedData, {
+    runValidators: true,
+  })
 
   return result
 }
@@ -154,7 +149,7 @@ const deleteStudentFromDb = async (id: string) => {
       throw new AppError(400, 'faild to delete student')
     }
 
-    const userId=deletedStudent.user
+    const userId = deletedStudent.user
     const deletedUser = await User.findByIdAndUpdate(
       userId,
       {

@@ -51,10 +51,25 @@ const getAllOfferedCourse= catchAsync(async(req:Request,res:Response)=>{
     sendResponse(res,{
         statusCode:200,
         success:true,
-        message:'Offered Course is deleted successfully',
+        message:'Offered Course is Retrieved successfully',
         data:result
     })
 })
+
+const getMyOffereddCourses= catchAsync(async(req:Request,res:Response)=>{
+     const userId=req.user.userId
+     console.log(req.user,'iam req.user');
+     
+  const result= await  OfferdCourseServices.getMyOfferedCourseFromDb(userId)
+   
+  sendResponse(res,{
+      statusCode:200,
+      success:true,
+      message:'Offered Course is Retrieved successfully',
+      data:result
+  })
+})
+
 
 
 const getSingleOfferedCourse= catchAsync(async(req:Request,res:Response)=>{
@@ -74,5 +89,6 @@ export const OfferedCourseController={
     updateOfferedCourse,
     deleteOfferedCourse,
     getAllOfferedCourse,
-    getSingleOfferedCourse
+    getSingleOfferedCourse,
+    getMyOffereddCourses
 }

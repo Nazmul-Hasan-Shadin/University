@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 
 import { TAcademicSemister } from './academicSemister.interface'
 import {
@@ -48,7 +48,7 @@ academicSemisterSchema.pre('save', async function (next) {
   next()
 })
 
-export const AcademicSemister = model<TAcademicSemister>(
+export const AcademicSemister =mongoose.model<TAcademicSemister>(
   'AcademicSemister',
   academicSemisterSchema,
 )

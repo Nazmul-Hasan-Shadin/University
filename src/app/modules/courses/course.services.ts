@@ -22,7 +22,11 @@ const getAllCouresFromDB = async (query: Record<string, unknown>) => {
     .fields()
 
   const result = await courseQuery.modelQuery
-  return result
+  const meta = await courseQuery.countTotal()
+  return {
+    meta,
+    result,
+  }
 }
 
 const getSingleCouresFromDB = async (id: string) => {
@@ -96,15 +100,12 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
         'preRequisiteCourse.course',
       )
       // filter out the new course filed
-  
-      return result;
+
+      return result
     }
 
-
-
-    await session.commitTransaction();
-    await session.endSession();
-
+    await session.commitTransaction()
+    await session.endSession()
   } catch (error) {
     await session.abortTransaction()
     await session.endSession()
@@ -120,30 +121,47 @@ const deleteCourseFromDB = async (id: string) => {
   return result
 }
 
- const assignFacultiesWithCourseIntoDB=async(id:string,payload:Partial<TCourseFaculty>)=>{
-   const result=await CourseFaculty.findByIdAndUpdate(id,{
-    course:id,
-    $addToSet:{faculties:{$each:payload}},
-   },{
-    upsert:true,
-    new:true,
-   })
-   return result
- }
+const assignFacultiesWithCourseIntoDB = async (
+  id: string,
+  payload: Partial<TCourseFaculty>,
+) => {
+  const result = await CourseFaculty.findByIdAndUpdate(
+    id,
+    {
+      course: id,
+      $addToSet: { faculties: { $each: payload } },
+    },
+    {
+      upsert: true,
+      new: true,
+    },
+  )
+  return result
+}
 
+const getFacultiesWithCourseFromDB = async (courseId: string) => {
+  const result = await CourseFaculty.findOne({ course: courseId }).populate(
+    'faculties',
+  )
+  return result
+}
 
- const removeFacultiesFromCourseFromDB=async(id:string,payload:Partial<TCourseFaculty>)=>{
-    const result=await CourseFaculty.findByIdAndUpdate(id,{
-     course:id,
-     $pull:{faculties:{$in:payload}}
-    },{
-    
-     new:true,
-    })
-    return result
-  }
-
-
+const removeFacultiesFromCourseFromDB = async (
+  id: string,
+  payload: Partial<TCourseFaculty>,
+) => {
+  const result = await CourseFaculty.findByIdAndUpdate(
+    id,
+    {
+      course: id,
+      $pull: { faculties: { $in: payload } },
+    },
+    {
+      new: true,
+    },
+  )
+  return result
+}
 
 export const CourseServices = {
   createCourseIntoDB,
@@ -152,5 +170,6 @@ export const CourseServices = {
   deleteCourseFromDB,
   updateCourseIntoDB,
   assignFacultiesWithCourseIntoDB,
-  removeFacultiesFromCourseFromDB
+  removeFacultiesFromCourseFromDB,
+  getFacultiesWithCourseFromDB,
 }

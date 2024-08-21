@@ -91,7 +91,7 @@ const createStudentValidationSchema = z.object({
       gender: z.enum(['male', 'female', 'other'], {
         errorMap: (issue, _ctx) => {
           if (issue.code === 'invalid_enum_value') {
-            return { message: '{VALUE} IS NOT REQUIRED' }
+            return { message: '{VALUE} IS  REQUIRED' }
           }
           return { message: 'Gender is required' }
         },

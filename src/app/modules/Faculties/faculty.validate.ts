@@ -39,6 +39,7 @@ export const createFacultyValidateSchema = z.object({
     permanentAddress: z.string(),
     profileImg: z.string().optional(),
     academicDepartment: z.string(),
+    
     isDeleted: z.boolean().default(false),
    })
  })

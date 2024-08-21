@@ -7,6 +7,7 @@ import { AcademicFacultyServices } from './academicFaculty.service'
 
 const createAcademicFaculty: RequestHandler = catchAsync(async (req, res) => {
   //   const { password, student: studentData } = req.body
+  
 
   const result = await AcademicFacultyServices.createAcademicFacultyIntoDb(
     req.body,
@@ -40,7 +41,7 @@ const getSingleAcademicFaculty = catchAsync(async (req, res, next) => {
 })
 
 const getAllAcademicFaculties = catchAsync(async (req, res, next) => {
-  const result = await AcademicFacultyServices.getAllAcademicFacultyFromDB()
+  const result = await AcademicFacultyServices.getAllAcademicFacultyFromDB(req.query)
   sendResponse(res, {
     statusCode: 200,
     success: true,

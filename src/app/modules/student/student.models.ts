@@ -64,7 +64,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     type: String,
     enum: {
       values: ['male', 'female', 'other'],
-      message: '{VALUE} IS NOT REQUIRED',
+      message: '{VALUE} IS  REQUIRED',
     },
     required: true,
   },
@@ -91,7 +91,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     type: localGuardianSchema,
     required: true,
   },
-  profileImg: { type: String, required: true },
+  profileImg: { type: String,default:''},
   admissionSemister:{
     type:Schema.ObjectId,
     ref:'AcademicSemister'
@@ -100,10 +100,26 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     type:Schema.Types.ObjectId,
     ref:'AcademicDepartment'
   },
+  academicFaculty:{
+    type:Schema.Types.ObjectId,
+    ref:'AcademicFaculty'
+  },
   isDeleted: {
     type: Boolean,
     default: false,
-  },
+  }
+  
+},{
+  toJSON:{
+    virtuals: true,
+  }
+})
+
+
+//  vartual 
+
+studentSchema.virtual('fullName').get(function(){
+  return this?.name?.firstName  + this?.name?.middleName + this?.name?.lastName
 })
 
 // pre save middleware /hook :will work on create () and save()

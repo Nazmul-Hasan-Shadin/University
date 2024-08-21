@@ -19,8 +19,13 @@ import { Admin } from '../Admin/admin.model'
 import { verifyToken } from '../auth/auth.utils'
 import { JwtPayload } from 'jsonwebtoken'
 import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary'
+import { AnyAaaaRecord } from 'dns'
 
-const createStudentIntoDb = async (password: string, payload: TStudent,file:any) => {
+const createStudentIntoDb = async (
+  password: string,
+  payload: TStudent,
+  file: any,
+) => {
   // create a user obj
 
   const userData: Partial<TUser> = {}
@@ -38,36 +43,48 @@ const createStudentIntoDb = async (password: string, payload: TStudent,file:any)
   const admissionSemester = await AcademicSemister.findById(
     payload.admissionSemister,
   )
-  console.log(admissionSemester,'adminiset');
-  
+
+  if (!admissionSemester) {
+    throw new AppError(404, 'Admission Semester not found')
+  }
+
+  const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDeparment,
+  )
+
+  if (!academicDepartment) {
+    throw new AppError(404, 'Academic depaartment not found')
+  }
+
+  payload.academicFaculty = academicDepartment.academicFaculty
+
   const session = await mongoose.startSession()
 
   try {
     session.startTransaction()
     // transiction 1
     userData.id = await generateStudentId(admissionSemester)
-    console.log(userData);
-    
+    console.log('iam finded id')
 
-    const imageName=`${userData?.id}${payload?.name?.firstName}`;
-    const path=file?.path
+    if (file) {
+     
 
-    // send imageto cloudianry
+      const imageName = `${userData?.id}${payload?.name?.firstName}`
+      const path = file?.path
 
-    const uploadedImg = await sendImageToCloudinary(imageName,path)
+      // send imageto cloudianry
 
-    
+      const uploadImageUrl = await sendImageToCloudinary(imageName, path)
+      payload.profileImg = uploadImageUrl?.secure_url as string
+    }
 
     // console.log(secure_url, 'iam secure url');
-    
 
     //  create a user
     const newUser = await User.create([userData], { session })
-  
-    
 
     if (!newUser) {
-      throw new Error('Failed to create new user')
+      throw new AppError(404, 'Failed to create new user')
     }
 
     // create student
@@ -76,9 +93,6 @@ const createStudentIntoDb = async (password: string, payload: TStudent,file:any)
     }
     payload.id = newUser[0].id
     payload.user = newUser[0]._id
-    payload.profileImg=uploadedImg?.secure_url
-    console.log(payload,'iam payload');
-    
 
     // create a student (transiction1)
     const newStudent = await Student.create([payload], { session })
@@ -86,19 +100,23 @@ const createStudentIntoDb = async (password: string, payload: TStudent,file:any)
       throw new AppError(404, 'Failed to create student')
     }
 
-  
-    
-
     await session.commitTransaction()
     await session.endSession()
     return newStudent
-  } catch (error) {
+  } catch (error: any) {
     await session.abortTransaction()
     await session.endSession()
+    throw new AppError(404, error)
   }
 }
 
-const createFacultyIntoDb = async (password: string, payload: TFaculty) => {
+const createFacultyIntoDb = async (
+  file: any,
+  password: string,
+  payload: TFaculty,
+) => {
+  console.log('iama paylod', payload)
+
   const userData: Partial<TUser> = {}
 
   userData.password = password || (config.default_pass as string)
@@ -109,14 +127,27 @@ const createFacultyIntoDb = async (password: string, payload: TFaculty) => {
     payload.academicDepartment,
   )
 
-  if (!AcademicDepartment) {
+  if (!academicDepartment) {
     throw new AppError(400, 'Academic department not found')
   }
+
+  payload.academicFaculty = academicDepartment?.academicFaculty
 
   const session = await mongoose.startSession()
   try {
     session.startTransaction()
     userData.id = await generateFacultyId()
+
+    if (file) {
+      const imageName = `${userData?.id}${payload?.name?.firstName}`
+      const path = file?.path
+
+      // send imageto cloudianry
+
+      const { secure_url } = await sendImageToCloudinary(imageName, path)
+      payload.profileImg = secure_url as string
+    }
+
     const newUser = await User.create([userData], { session })
 
     if (!newUser.length) {
@@ -221,11 +252,10 @@ const changeUserStatusIntoDb = async (
   return result
 }
 
-
 export const UserServices = {
   createStudentIntoDb,
   createFacultyIntoDb,
   createAdminIntoDB,
   getMe,
-  changeUserStatusIntoDb
+  changeUserStatusIntoDb,
 }

@@ -1,3 +1,4 @@
+import QueryBuilder from '../../builder/QueryBuilder'
 import { TAcademicFaculty } from './academicFaculty.interface'
 import { AcademicFaculty } from './academicFaculty.model'
 
@@ -6,8 +7,9 @@ const createAcademicFacultyIntoDb = async (payload: TAcademicFaculty) => {
   return result
 }
 
-const getAllAcademicFacultyFromDB = async () => {
-  const result = await AcademicFaculty.find()
+const getAllAcademicFacultyFromDB = async (query:Record<string,unknown>) => {
+  const academicFacultyQuery = new QueryBuilder(AcademicFaculty.find(),query).search(['name']).filter()
+  const result= academicFacultyQuery.modelQuery
   return result
 }
 

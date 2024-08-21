@@ -17,6 +17,7 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     role: {
       type: String,
+      enum: ['superAdmin', 'student', 'faculty', 'admin'],
     },
     password: {
       type: String,
@@ -68,10 +69,9 @@ userSchema.post('save', function (doc, next) {
 })
 
 userSchema.statics.isUserExistByCustomId = async function (id: string) {
- 
   return await User.findOne({ id }).select('+password')
 }
-userSchema.statics.isJwtIssuedBeforePasswordChanged =  function (
+userSchema.statics.isJwtIssuedBeforePasswordChanged = function (
   passwordChangedTime: Date,
   JwtIssuedTime: number,
 ) {

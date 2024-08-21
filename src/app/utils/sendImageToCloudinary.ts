@@ -13,7 +13,7 @@ cloudinary.config({
 export const sendImageToCloudinary = async (
   imageName: string,
   path: string,
-) => {
+):Promise<Record<string,unknown>> => {
   const uploadResult = await cloudinary.uploader
     .upload(path, {
       public_id: imageName,

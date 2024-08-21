@@ -16,3 +16,4 @@ export const academicSemisterNameCodeMapper: TAcademicSemisterNameCodeMapper = {
   Summar: '02',
   Fall: '03',
 }
+export const semesterSearchAbleField=['name']

@@ -10,10 +10,12 @@ const findLastStudentId = async () => {
       id: 1,
       _id: 0,
     },
-  )
-    .sort({ createdAt: -1 })
-    .lean()
+  ).sort({ createdAt: -1 }).lean()
+
+    console.log(lastStudent,'iam last Student');
+    
   return lastStudent?.id ? lastStudent.id : undefined
+  
 }
 
 const findLastFacultyId=async()=>{
@@ -26,24 +28,33 @@ const findLastFacultyId=async()=>{
 }
 
 export const generateStudentId = async (payload: TAcademicSemister) => {
+  console.log(payload,'iam studentid payload');
+  
   const lastStudentId = await findLastStudentId()
 
   let currentId = (0).toString()
-  const lastStudentSemesterCode=lastStudentId?.substring(4,6);
-  console.log(lastStudentSemesterCode);
+  const lastStudentSemesterCode=lastStudentId?.substring(4,6); //02
+  console.log('iam last stuendet semester code',lastStudentSemesterCode);
   
-  const lastStudentYear=lastStudentId?.substring(0,4)
-  console.log(lastStudentYear);
+  
+  const lastStudentYear=lastStudentId?.substring(0,4) //2027
+  console.log(lastStudentYear,'iam last student year');
   
   const currentSemesterCode= payload.code;
+  console.log(currentSemesterCode,'iam current semeste code');
+  
   const currentYear=payload.year;
 
   if(lastStudentId && lastStudentSemesterCode===currentSemesterCode && lastStudentYear===currentYear){
-
-    currentId=lastStudentId.substring(6)
+     console.log('iam enterdd here ');
+     
+    currentId=lastStudentId.substring(6) //0001
   }
   let incrementId = (Number(currentId) + 1).toString().padStart(4, '0')
   incrementId = `${payload.year}${payload.code}${incrementId}`
+
+  console.log(incrementId,'iam incremient id bro');
+  
   return incrementId
 }
 

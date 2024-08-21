@@ -76,10 +76,10 @@ import Joi from "joi"
       'any.required': 'Name is required',
     }),
     gender: Joi.string()
-      .valid('male', 'female', 'other')
+      .valid('Male', 'Female', 'Other')
       .required()
       .messages({
-        'any.only': '{VALUE} IS NOT REQUIRED',
+        'any.only': '{VALUE} IS  REQUIRED',
         'any.required': 'Gender is required',
       }),
     dateOfBirth: Joi.string().optional(),

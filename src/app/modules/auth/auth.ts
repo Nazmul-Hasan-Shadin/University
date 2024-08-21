@@ -12,6 +12,8 @@ const auth = (...requiredRoles: TUserRole[]) => {
     // validation
 
     const token = req.headers.authorization
+    console.log(token,'ij');
+    
   
     
     if (!token) {
@@ -31,6 +33,8 @@ const auth = (...requiredRoles: TUserRole[]) => {
     } catch (error) {
       throw new AppError(401,'unauthorized')
     }
+    console.log('decoded',decoded);
+    
     const { role, userId, iat } = decoded
 
     const user = await User.isUserExistByCustomId(userId)

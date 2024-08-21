@@ -39,7 +39,8 @@ const getSingleAcademicSemister = catchAsync(async (req, res, next) => {
 })
 
 const getAllAcademicSemister = catchAsync(async (req, res, next) => {
-  const result = await AcademicSemisterServices.getAllAcademicSemesterFromDb()
+   
+  const result = await AcademicSemisterServices.getAllAcademicSemesterFromDb(req.query)
   sendResponse(res, {
     statusCode: 200,
     success: true,

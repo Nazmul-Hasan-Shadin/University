@@ -38,7 +38,7 @@ const enrolledCourseSchema = new Schema<TEnrlledCourse>({
   },
   academicSemester: {
     type: Schema.Types.ObjectId,
-    ref: 'AcademicSemester',
+    ref: 'AcademicSemister',
     required: true,
   },
   academicFaculty: {
