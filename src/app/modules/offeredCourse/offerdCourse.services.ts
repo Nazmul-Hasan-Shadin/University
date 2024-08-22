@@ -189,17 +189,75 @@ const getMyOfferedCourseFromDb = async (userId: string) => {
             },
           },
         ],
-        as: 'enrolledCourse',
+        as: 'enrolledCourses',
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'enrolledcours',
+        let: {
+          currentStudent: student._id,
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ['$student', '$$currentStudent'],
+                  },
+                  {
+                    $eq: ['$isCompleted', true],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'completedCourses',
+      },
+    },
+    {
+      $addFields: {
+        completedCourseIds: {
+          $map: {
+            input: '$completedCourses',
+            as: 'completed',
+            in: '$$completed.course',
+          },
+        },
       },
     },
 
     {
       $addFields: {
-        $in: ['course._id',{
-          $map:{
-            input:'enrolledCourse._id'
-          }
-        }],
+        isPreRequisitesFulFilled: {
+          $or: [{ $eq: ['$course.preRequisiteCourse', []] },
+          
+          { $setIsSubset:['$course.preRequisiteCourse.course','$completedCourseIds'] }
+        
+        ],
+        },
+        isAlreadyEnrolled: {
+          $in: [
+            '$course._id',
+            {
+              $map: {
+                input: '$enrolledCourses',
+                as: 'enroll',
+                in: '$$enroll.course',
+              },
+            },
+          ],
+        },
+      },
+    },
+
+    {
+      $match: {
+        isAlreadyEnrolled: false,
+        isPreRequisitesFulFilled:true
       },
     },
   ])
