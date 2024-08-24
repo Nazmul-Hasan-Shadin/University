@@ -124,7 +124,10 @@ const getAllOfferedCoursesFromDB = async (query: Record<string, unknown>) => {
   }
 }
 
-const getMyOfferedCourseFromDb = async (userId: string) => {
+const getMyOfferedCourseFromDb = async (
+  userId: string,
+  query: Record<string, any>,
+) => {
   const student = await Student.findOne({ id: userId })
   // find the studen
   if (!student) {
@@ -139,7 +142,11 @@ const getMyOfferedCourseFromDb = async (userId: string) => {
     throw new AppError(404, 'There is no ongoing semester registration')
   }
 
-  const result = await OfferedCourse.aggregate([
+  const limit = Number(query?.limit) || 5
+  const page = Number(query?.page) || 1
+  const skip = (page - 1) * limit
+
+  const aggregationQuery = [
     /** step 1 find show me all offerred course acording to student =>department=>faculty and perform aggrigiate for lookup course
      *  issue: now when i enroll a course that course still show me in offered course for again enrolled .lets solve in next step
      * step2: for filterout enrolled course we need to add enrolledCourse filed to the all offered course . then perform filtering
@@ -233,11 +240,16 @@ const getMyOfferedCourseFromDb = async (userId: string) => {
     {
       $addFields: {
         isPreRequisitesFulFilled: {
-          $or: [{ $eq: ['$course.preRequisiteCourse', []] },
-          
-          { $setIsSubset:['$course.preRequisiteCourse.course','$completedCourseIds'] }
-        
-        ],
+          $or: [
+            { $eq: ['$course.preRequisiteCourse', []] },
+
+            {
+              $setIsSubset: [
+                '$course.preRequisiteCourse.course',
+                '$completedCourseIds',
+              ],
+            },
+          ],
         },
         isAlreadyEnrolled: {
           $in: [
@@ -257,12 +269,38 @@ const getMyOfferedCourseFromDb = async (userId: string) => {
     {
       $match: {
         isAlreadyEnrolled: false,
-        isPreRequisitesFulFilled:true
+        isPreRequisitesFulFilled: true,
       },
     },
-  ])
+  ]
 
-  return result
+  const paginationQuery = [
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+  ]
+
+  const result = await OfferedCourse.aggregate(
+   [ ...aggregationQuery,
+    ...paginationQuery,]
+    // pagination
+  )
+
+  const total = (await OfferedCourse.aggregate(aggregationQuery)).length
+  const totalPage = Math.ceil(result.length / limit)
+
+  return {
+    meta: {
+      page: 1,
+      limit,
+      total: 6,
+      totalPage: 1,
+    },
+    result
+  }
 }
 
 const getSingleOfferedCourseFromDB = async (id: string) => {

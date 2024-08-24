@@ -13,7 +13,7 @@ const createFacultyIntoDB = async (payload: TFaculty) => {
 
 const getAllFacultyFromDB = async (query:Record<string, unknown>) => {
   const fcultyQuery = new QueryBuilder(
-    Faculty.find().populate('academicDepartment'),
+    Faculty.find().populate('academicDepartment academicFaculty'),
     query,
   )
     .search(FacultySearchableFields)

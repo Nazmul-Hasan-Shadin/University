@@ -28,4 +28,10 @@ router.get(
   FacultyControllers.getAllFaculties,
 )
 
+router.get(
+  '/',
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin,USER_ROLE.faculty),
+  FacultyControllers.getSingleFaculty,
+)
+
 export const FacultyRoutes = router

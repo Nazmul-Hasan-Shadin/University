@@ -6,6 +6,13 @@ import auth from '../auth/auth'
 import { USER_ROLE } from '../user/user.const'
 const router = express.Router()
 
+router.get(
+  '/',
+  auth(USER_ROLE.faculty,USER_ROLE.admin,USER_ROLE.superAdmin),
+  EnrolledCourseController.getAllEnrolledCourse,
+);
+
+
 router.post(
   '/create-enrolled-course',
   auth('student'),
@@ -20,6 +27,7 @@ router.get(
   auth(USER_ROLE.student),
   EnrolledCourseController.getMyEnrolledCourses,
 );
+
 
 
 router.patch(

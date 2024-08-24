@@ -10,6 +10,7 @@ import { Faculty } from '../Faculties/faculty.model'
 import { calculateGradeAndPoints } from './enrolledCourse.utils'
 import QueryBuilder from '../../builder/QueryBuilder'
 import { EnrolledCourse } from './enrolledCourse.model'
+import { User } from '../user/user.model'
 
 const createEnrolledCourseIntoDb = async (
   userId: string,
@@ -140,8 +141,6 @@ const getMyEnrolledCoursesFromDB = async (
   studentId: string,
   query: Record<string, unknown>,
 ) => {
-  console.log('iam here', studentId)
-
   const student = await Student.findOne({ id: studentId })
 
   if (!student) {
@@ -150,6 +149,42 @@ const getMyEnrolledCoursesFromDB = async (
 
   const enrolledCourseQuery = new QueryBuilder(
     EnrolledCourse.find({ student: student._id }).populate(
+      'semesterRegistration academicSemester academicFaculty academicDepartment offeredCourse course student faculty',
+    ),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+
+  const result = await enrolledCourseQuery.modelQuery
+  const meta = await enrolledCourseQuery.countTotal()
+
+  return {
+    meta,
+    result,
+  }
+}
+const getAllEnrolledCourseFromDb = async (
+  facultyId: string,
+  query: Record<string, unknown>,
+) => {
+      console.log('iam facylyt',facultyId);
+      
+  const faculty= await Faculty.findOne({
+    id:facultyId
+  })
+
+  if (!faculty) {
+      new AppError(404,'No Enrolled Course found for your course')
+  }
+
+  console.log(faculty);
+  
+
+  const enrolledCourseQuery = new QueryBuilder(
+    EnrolledCourse.find({faculty:faculty!._id }).populate(
       'semesterRegistration academicSemester academicFaculty academicDepartment offeredCourse course student faculty',
     ),
     query,
@@ -233,7 +268,8 @@ const updateEnrolledCourseMarkIntoDb = async (
     const totalMarks =
       Math.ceil(classTest1) +
       Math.ceil(midTerm) +
-      Math.ceil(classTest2)+ Math.ceil(finalTerm)
+      Math.ceil(classTest2) +
+      Math.ceil(finalTerm)
     const courseResult = calculateGradeAndPoints(totalMarks)
 
     modifiedData.grade = courseResult.grade
@@ -255,4 +291,5 @@ export const EnrolledCourseServices = {
   createEnrolledCourseIntoDb,
   updateEnrolledCourseMarkIntoDb,
   getMyEnrolledCoursesFromDB,
+  getAllEnrolledCourseFromDb
 }

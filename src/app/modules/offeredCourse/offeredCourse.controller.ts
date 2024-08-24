@@ -60,7 +60,7 @@ const getMyOffereddCourses= catchAsync(async(req:Request,res:Response)=>{
      const userId=req.user.userId
      console.log(req.user,'iam req.user');
      
-  const result= await  OfferdCourseServices.getMyOfferedCourseFromDb(userId)
+  const result= await  OfferdCourseServices.getMyOfferedCourseFromDb(userId,req.query)
    
   sendResponse(res,{
       statusCode:200,
